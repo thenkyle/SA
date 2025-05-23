@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>供應商平台</title>
+  <!-- 引用 Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-bg: #f5f7fa;
+      --primary: #1f2937;
+      --primary-light: #374151;
+      --accent: #2563eb;
+      --accent-light: #3b82f6;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: rgba(0,0,0,0.05);
+      --btn-height: 2.5rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* 側邊選單 */
+    .sidebar {
+      width: 200px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar .logo {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--primary);
+      padding: 1rem;
+    }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--primary-light);
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      background: var(--accent-light);
+      color: #fff;
+    }
+
+    /* 主區域 */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card-bg);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+    .header .title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .header .controls button {
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .header .controls button:hover {
+      background: var(--accent-light);
+    }
+    .header .controls .material-icons {
+      font-size: 1.2rem;
+      vertical-align: middle;
+    }
+
+    /* Dashboard 布局 */
+    .dashboard {
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      grid-gap: 1.5rem;
+      overflow: auto;
+    }
+
+    /* 篩選卡片 */
+    .card.filter-card {
+      background: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 6px var(--shadow);
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .filter-card input,
+    .filter-card select {
+      flex: 1;
+      height: var(--btn-height);
+      padding: 0 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      background: transparent;
+      color: var(--text);
+    }
+    .filter-card button {
+      height: var(--btn-height);
+      padding: 0 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+    }
+    .filter-card button.reset {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    /* 供應商清單卡片 */
+    .card.list-card {
+      background: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 6px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .list-card .header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: bold;
+    }
+    .list-card table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .list-card th,
+    .list-card td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+    .list-card thead {
+      background: var(--sidebar-bg);
+    }
+    .list-card tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    /* Tag 樣式 */
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .tag.enable {
+      background: #d1fae5;
+      color: #047857;
+    }
+    .tag.disable {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* 操作 Icon */
+    .action-icon {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+    }
+    .action-icon:hover {
+      color: var(--primary);
+    }
+
+    /* 分頁 */
+    .pagination {
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+    .pagination button {
+      height: var(--btn-height);
+      padding: 0 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      background: #fff;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      color: var(--muted);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    .pagination span {
+      align-self: center;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">CC公司</div>
+    <nav>
+      <a href="#" class="active">首頁</a>
+      <a href="#">供應商</a>
+      <a href="#">案件管理</a>
+      <a href="#">報表</a>
+      <a href="#">設定</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <div class="title">供應商列表</div>
+      <div class="controls">
+        <button title="匯出">
+          <span class="material-icons">download</span>匯出
+        </button>
+      </div>
+    </header>
+
+    <section class="dashboard">
+      <!-- 篩選 -->
+      <div class="card filter-card">
+        <input type="text" placeholder="供應商名稱"/>
+        <input type="text" placeholder="統一編號"/>
+        <select>
+          <option value="">全部狀態</option>
+          <option value="enable">啟用</option>
+          <option value="disable">停用</option>
+        </select>
+        <button class="reset">重設</button>
+        <button>查詢</button>
+      </div>
+
+      <!-- 清單 -->
+      <div class="card list-card">
+        <div class="header">供應商清單</div>
+        <table>
+          <thead>
+            <tr>
+              <th>名稱</th>
+              <th>統編</th>
+              <th>類型</th>
+              <th>聯絡人</th>
+              <th>狀態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>范例供應商 A</td>
+              <td>12345678</td>
+              <td>製造業</td>
+              <td>王小明</td>
+              <td><span class="tag enable">啟用</span></td>
+              <td>
+                <a href="#" class="action-icon" title="查看">
+                  <span class="material-icons">visibility</span>
+                </a>
+                <a href="#" class="action-icon" title="編輯">
+                  <span class="material-icons">edit</span>
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>范例供應商 B</td>
+              <td>87654321</td>
+              <td>服務業</td>
+              <td>李小華</td>
+              <td><span class="tag disable">停用</span></td>
+              <td>
+                <a href="#" class="action-icon" title="查看">
+                  <span class="material-icons">visibility</span>
+                </a>
+                <a href="#" class="action-icon" title="編輯">
+                  <span class="material-icons">edit</span>
+                </a>
+              </td>
+            </tr>
+            <!-- 更多列... -->
+          </tbody>
+        </table>
+
+        <!-- 分頁 -->
+        <div class="pagination">
+            <button id="prevBtn">&laquo; 上一頁</button>
+            <span id="pageInfo">第 1 頁，共 5 頁</span>
+            <button id="nextBtn">下一頁 &raquo;</button>
+        </div>
+      </div>
+    </section>
+  </div>
+<script>
+        // 總頁數與初始頁碼，可由後端或 API 動態取得
+        const totalPages = 5;
+        let currentPage = 1;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        function renderPagination() {
+            pageInfo.textContent = `第 ${currentPage} 頁，共 ${totalPages} 頁`;
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+            // TODO: 在此呼叫 fetchData(currentPage) 來重新載入表格資料
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPagination();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPagination();
+            }
+        });
+
+        // 首次渲染
+        renderPagination();
+    </script>
+
+</body>
+</html>
+
+
+
+
+
